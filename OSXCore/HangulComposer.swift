@@ -245,11 +245,22 @@ final class HangulComposer: NSObject, Composer {
 
     var string = string!
     // 한글 입력에서 캡스락 무시
+
     if flags.contains(.shift) {
       string = keyMapUpper[keyCode.rawValue] ?? string
     } else {
       string = keyMapLower[keyCode.rawValue] ?? string
     }
+    if flags.isEmpty || flags == .capsLock {
+      switch string {
+      case ";": string = "ㆍ"
+      case "'": string = "ㅿ"
+      case "[": string = "ㆁ"
+      case "]": string = "ㆆ"
+      default: break
+      }
+    }
+
     let handled = inputContext.process(string.unicodeScalars.first!.value)
     let ucsString = inputContext.commitUCSString
     let recentCommitString = representableString(ucsString: ucsString)
